@@ -1,0 +1,16 @@
+[
+  {
+    "labels": {
+      "job": "linux",
+      "name": "UB18-01"
+    },
+    "targets": ["localhost:9101"]
+  },
+  {
+    "labels": {
+      "job": "linux",
+      "name": "UB18-02"
+    },
+    "targets": ["localhost:9102"]
+  }
+]

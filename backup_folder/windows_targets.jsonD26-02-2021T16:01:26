@@ -1,0 +1,20 @@
+[
+ {
+  "labels": {
+   "job": "windows",
+   "name": "W-101"
+  },
+  "targets": [
+   "localhost:91sss03"
+  ]
+ },
+ {
+  "labels": {
+   "job": "windows",
+   "name": "W-102"
+  },
+  "targets": [
+   "localhost:9104"
+  ]
+ }
+]
