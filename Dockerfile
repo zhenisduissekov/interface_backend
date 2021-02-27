@@ -4,4 +4,6 @@ COPY . /
 
 EXPOSE 8088
 
+VOLUME /data
+
 CMD ./interface_backend
