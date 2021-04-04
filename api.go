@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -11,7 +12,7 @@ import (
 )
 
 var (
-	listendAddress = flag.String("web.ports", ":8087", "Ports ")
+	listendAddress = flag.String("web.ports", ":8088", "Ports ")
 )
 
 
@@ -22,6 +23,9 @@ func startServer() {
 	router.HandleFunc("/getFileContentJSON/{filename}", getFileContentJSON).Methods("GET")
 	router.HandleFunc("/getFileContentJSON/{filename}", postFileContentJSON).Methods("POST")
 	router.HandleFunc("/getFileContentJSON/{filename}", deleteFileContentJSON).Methods("DELETE")
+
+	router.HandleFunc("/prometheus_reset", resetPrometheusServer).Methods("GET")
+
 	srv := &http.Server{
 		Handler: router,
 		Addr: *listendAddress,
@@ -43,6 +47,7 @@ func listAllFilesInDir(w http.ResponseWriter, r *http.Request) {
 
 func getFileContentJSON(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	fmt.Println("I was called")
 	fileContentJSON, err := readFromFileJSON(vars["filename"])
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -59,8 +64,11 @@ func respondWithError(w http.ResponseWriter, code int, message string) {
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.WriteHeader(code)
 	w.Write(response)
+	
 }
 
 
@@ -88,4 +96,13 @@ func deleteFileContentJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJSON(w, http.StatusOK, "Success. File deleted")
+}
+
+func resetPrometheusServer(w http.ResponseWriter, r *http.Request)  {
+	err := sendResetCommandToPrometheus()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, "Success. Prometheus reset")
 }

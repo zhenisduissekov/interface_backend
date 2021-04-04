@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -103,4 +104,20 @@ func backupFile(filename string) error {
 		return err
 	}
 	return out.Close()
+}
+
+
+func sendResetCommandToPrometheus() error {
+req, err := http.NewRequest("POST", "http://localhost:9998/-/reload", nil)
+if err != nil {
+	return err
+}
+req.SetBasicAuth("promadmin", "W74!65Mp+")
+
+resp, err := http.DefaultClient.Do(req)
+if err != nil {
+	return err
+}
+defer resp.Body.Close()
+return nil
 }
